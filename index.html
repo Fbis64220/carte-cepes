@@ -112,7 +112,7 @@ details ul{padding-left:18px;margin:6px 0}
 <body>
 <div class="app">
   <aside>
-    <h1>Carte à cèpes<small>Croise la météo des 5 dernières semaines, le relief (RGE ALTI) et les essences forestières (BD Forêt IGN) pour repérer où les cèpes ont le plus de chances de sortir.</small></h1>
+    <h1>Carte à cèpes<small>Croise la météo des 80 derniers jours, le relief (RGE ALTI) et les essences forestières (BD Forêt IGN) pour repérer où les cèpes ont le plus de chances de sortir.</small></h1>
 
     <div class="totem" aria-live="polite">
       <svg id="boar" class="mood-sniff" viewBox="0 0 66 40" role="img" aria-label="Pantxo le marcassin">
@@ -191,8 +191,9 @@ details ul{padding-left:18px;margin:6px 0}
       <p><strong>Météo (Open-Meteo, modèles Météo-France).</strong> Températures corrigées de l'altitude de chaque point (−0,65 °C / 100 m), ce qui fait descendre la saison en altitude toute seule.</p>
       <ul>
         <li>Pluie déclenchante : cumul sur 4 jours (25 mm ≈ 0,7 ; plein effet vers 35 mm). Le délai part du dernier jour de pluie et dépend de la température qui a suivi : sortie à J+8 par temps doux (≥ 15 °C), à J+12 par temps frais (≤ 10 °C). Pic pendant 7 jours, puis la vague s'éteint en 7 jours. +15 % si le sol avait déjà été mouillé dans les 3 semaines d'avant.</li>
-        <li>Sans pluie déclenchante, le score météo est nul. L'humidité ne fait que moduler une poussée : pluie des 7 derniers jours, ou humidité du sol jugée par rapport à son propre maximum des 7 dernières semaines (un sable landais n'est jamais aussi humide qu'un limon), et pour un quart l'humidité de l'air.</li>
+        <li>Sans pluie déclenchante, le score météo est nul. L'humidité ne fait que moduler une poussée : pluie des 7 derniers jours, ou humidité du sol jugée par rapport à son propre maximum et minimum des 7 dernières semaines (un sable landais n'est jamais aussi humide qu'un limon), et pour un quart l'humidité de l'air.</li>
         <li>Température : sol idéal à 12–16 °C (nul sous 7,5 °C), moyenne de l'air à 12–16 °C, nuits à 6–12 °C.</li>
+        <li>Réserve d'eau : bilan pluie moins évaporation sur 60 jours. Un sol rechargé (bilan positif) ne pénalise pas ; après un été sec (bilan de −150 mm ou moins), le score météo est réduit de 45 %. C'est souvent ce qui sépare une « année à cèpes » d'une année sans.</li>
         <li>Choc thermique : une baisse des nuits d'environ 5 °C après une période chaude et pluvieuse donne jusqu'à 15 % de bonus.</li>
         <li>Pénalités : chaque jour de gel sur 7 jours (×0,4), gelée franche (≤ −2 °C) la semaine d'avant (×0,7), journées au-dessus de 28 °C, vent de nord-est sec d'au moins 20 km/h (×0,8 par jour sur 5 jours), évaporation nettement supérieure à la pluie.</li>
         <li>Lecture : 35 et plus = bonnes conditions, 55 et plus = excellentes.</li>
@@ -303,7 +304,7 @@ map.on("moveend", () => { try { const c = map.getCenter(); localStorage.setItem(
 const S = { layer: "total", day: 0, opacity: 0.8, data: null, overlay: null, rect: null, spots: [], pick: null };
 
 /* ================= Étapes ================= */
-const STEPS = ["Essences forestières (BD Forêt)", "Relief (RGE ALTI)", "Météo des 5 semaines (Open-Meteo)", "Calcul des scores"];
+const STEPS = ["Essences forestières (BD Forêt)", "Relief (RGE ALTI)", "Météo des 80 derniers jours (Open-Meteo)", "Calcul des scores"];
 function stepsInit() { const ul = $("#steps"); ul.hidden = false; ul.innerHTML = STEPS.map(s => `<li>${s}</li>`).join(""); }
 function step(i, cls, extra) { const li = $("#steps").children[i]; li.className = cls; if (extra) li.textContent = STEPS[i] + " · " + extra; }
 
@@ -355,7 +356,7 @@ async function fetchWeather(z) {
   }
   const url = "https://api.open-meteo.com/v1/forecast?latitude=" + lats.join(",") + "&longitude=" + lons.join(",") +
     "&daily=precipitation_sum,temperature_2m_max,temperature_2m_min,temperature_2m_mean,wind_speed_10m_max,wind_direction_10m_dominant,et0_fao_evapotranspiration" +
-    "&hourly=soil_temperature_6cm,soil_moisture_3_to_9cm,relative_humidity_2m&past_days=45&forecast_days=7&timezone=Europe%2FParis";
+    "&hourly=soil_temperature_6cm,soil_moisture_3_to_9cm,relative_humidity_2m&past_days=80&forecast_days=7&timezone=Europe%2FParis";
   let j = await getJSON(url);
   if (!Array.isArray(j)) j = [j];
   const days = j[0].daily.time;
@@ -371,7 +372,7 @@ async function fetchWeather(z) {
       WS: d.wind_speed_10m_max || null, WD: d.wind_direction_10m_dominant || null, ET: d.et0_fao_evapotranspiration || null, elev: e };
   });
   const today = new Date(); const iso = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0") + "-" + String(today.getDate()).padStart(2, "0");
-  let t0 = days.indexOf(iso); if (t0 < 0) t0 = 45;
+  let t0 = days.indexOf(iso); if (t0 < 0) t0 = 80;
   return { days, pts, t0 };
 }
 
@@ -543,7 +544,7 @@ function weatherAt(w, d) {
   //    (un sable landais n'atteint jamais l'humidité d'un sol limoneux). L'humidité de l'air ne compte que pour un quart.
   const sm = wavg(w.SM, d - 2, d);
   let smRel = null;
-  if (sm != null) { const v = w.SM.filter(x => x != null), lo = Math.min(...v), hi = Math.max(...v); smRel = hi - lo > 0.03 ? (sm - lo) / (hi - lo) : null; }
+  if (sm != null) { const v = w.SM.slice(Math.max(0, d - 49), d + 1).filter(x => x != null), lo = Math.min(...v), hi = Math.max(...v); smRel = hi - lo > 0.03 ? (sm - lo) / (hi - lo) : null; }
   const RH = wavg(w.RH, d - 4, d);
   const fWet = Math.max(smooth(0, 10, P7), smRel != null ? smooth(0.2, 0.7, smRel) : sm != null ? smooth(0.14, 0.30, sm) : 0);
   const fHum = RH != null ? 0.75 * fWet + 0.25 * smooth(75, 95, RH) : fWet;
@@ -568,9 +569,13 @@ function weatherAt(w, d) {
   const shock = smooth(1.5, 5, drop) * (P30 >= 25 ? 1 : 0.5), bonus = 1 + 0.15 * shock;
 
   // Sans pluie déclenchante, rien ne sort : l'humidité et la réserve ne font que moduler une poussée existante
-  const base = fTrig * (0.55 + 0.45 * fHum) * (0.85 + 0.15 * fCum);
+  // Réserve d'eau : bilan pluie − évaporation (ET0) sur 60 jours. Un sol qui a fait le plein avant l'automne
+  // donne des poussées plus fortes ; après un été sec, une seule pluie produit moins.
+  const P60 = wsum(w.P, d - 59, d), B60 = w.ET ? P60 - wsum(w.ET, d - 59, d) : null;
+  const fRes = 0.55 + 0.45 * (B60 != null ? smooth(-150, 0, B60) : smooth(60, 200, P60));
+  const base = fTrig * (0.55 + 0.45 * fHum) * (0.85 + 0.15 * fCum) * fRes;
   const W = clamp(base * fTemp * fFrost * fHeat * fNE * fDry * bonus);
-  return { W, P30, P7, trig, trigDay, prior, lag0, Tm, Ts, Tn7, Tx7, sm, smRel, RH, ne, dryBal, frost, hardOld, hot, drop, shock, fTrig, fCum, fHum, fTemp, fFrost };
+  return { W, P60, B60, fRes, P30, P7, trig, trigDay, prior, lag0, Tm, Ts, Tn7, Tx7, sm, smRel, RH, ne, dryBal, frost, hardOld, hot, drop, shock, fTrig, fCum, fHum, fTemp, fFrost };
 }
 
 // Fin de saison (mi-octobre → février) : on cherche la chaleur, donc les versants sud et les zones abritées
@@ -676,6 +681,8 @@ function updateSummary() {
   if (wi.Ts != null) why.push(`sol à ${fmt(wi.Ts, 1)} °C`);
   if (wi.Tn7 != null) why.push(`nuits à ${fmt(wi.Tn7, 1)} °C`);
   if (wi.shock > 0.5) why.push("choc thermique récent");
+  if (wi.fRes < 0.8) why.push(`réserve d'eau faible (${wi.B60 != null ? "bilan 60 j : " + fmt(wi.B60) + " mm" : fmt(wi.P60) + " mm en 60 j"})`);
+  else if (wi.fRes > 0.97) why.push("sol bien rechargé");
   if (wi.frost >= 1) why.push("gelées récentes");
   if (wi.ne >= 2) why.push(`${wi.ne} jours de vent de nord-est`);
   if (wi.P7 < 3 && (wi.smRel == null || wi.smRel < 0.35)) why.push("sol qui s'assèche");
@@ -724,7 +731,8 @@ function ruleText(w, days, ref, t0) {
   return h;
 }
 
-function drawChart(w, d, days, t0, wi) {
+function drawChart(w0, d0, days0, t00, wi) {
+  const s0 = Math.max(0, t00 - 45), w = { P: w0.P.slice(s0), Tm: w0.Tm.slice(s0) }, days = days0.slice(s0), d = d0 - s0, t0 = t00 - s0;
   const n = days.length, Wd = 340, H = 130, pl = 26, pr = 26, pt = 10, pb = 20, cw = (Wd - pl - pr) / n;
   const pmax = Math.max(20, ...w.P), tvals = w.Tm.filter(v => v != null), tmin = Math.min(0, ...tvals), tmax = Math.max(20, ...tvals);
   const yP = v => H - pb - v / pmax * (H - pt - pb), yT = v => H - pb - (v - tmin) / (tmax - tmin) * (H - pt - pb);
@@ -828,6 +836,7 @@ function showPoint(ll) {
     const td = wi.trigDay != null ? new Date(D.wx.days[wi.trigDay] + "T12:00").toLocaleDateString("fr-FR", { day: "numeric", month: "short" }) : "—";
     h += `<dt>Pluie déclenchante (4 j)</dt><dd>${wi.trigDay != null ? fmt(wi.trig) + " mm (" + td + ")" : "aucune"}</dd><dt>Délai de sortie estimé</dt><dd>${fmt(wi.lag0)} à ${fmt(wi.lag0 + 7)} j</dd>`;
     h += `<dt>Pluie 30 j · 7 j</dt><dd>${fmt(wi.P30)} · ${fmt(wi.P7)} mm</dd>`;
+    h += `<dt>Réserve d'eau (60 j)</dt><dd>${wi.B60 != null ? (wi.B60 > 0 ? "+" : "") + fmt(wi.B60) + " mm" : fmt(wi.P60) + " mm de pluie"} · ${Math.round(wi.fRes * 100)} %</dd>`;
     if (wi.Ts != null) h += `<dt>T° sol (10 j)</dt><dd>${fmt(wi.Ts, 1)} °C</dd>`;
     h += `<dt>T° air moy. (10 j)</dt><dd>${fmt(wi.Tm, 1)} °C</dd><dt>Nuits · journées (7 j)</dt><dd>${fmt(wi.Tn7, 1)} · ${fmt(wi.Tx7, 1)} °C</dd>`;
     h += `<dt>Baisse des nuits</dt><dd>${wi.drop > 0 ? "−" : "+"}${fmt(Math.abs(wi.drop), 1)} °C</dd>`;
