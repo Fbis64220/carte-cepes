@@ -87,8 +87,14 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .subs{display:grid;grid-template-columns:76px 1fr 34px;gap:6px 8px;align-items:center;font-size:12.5px}
 .subs span:last-child{font:12px var(--f-mono);text-align:right}
 ol.spots{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
-ol.spots button{width:100%;display:grid;grid-template-columns:24px 1fr auto;gap:8px;align-items:center;text-align:left;background:transparent;padding:7px 8px}
-ol.spots button:hover{background:var(--chip)}
+ol.spots li{display:flex;flex-direction:column;gap:2px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+ol.spots li:last-child{border-bottom:0}
+ol.spots .go{width:100%;display:grid;grid-template-columns:24px 1fr auto;gap:8px;align-items:center;text-align:left;background:transparent;border:0;padding:7px 8px}
+ol.spots .go:hover{background:var(--chip)}
+.nav{display:flex;flex-wrap:wrap;gap:4px;padding-left:40px}
+.nav a,.nav button{font:500 11.5px var(--f-body);padding:3px 8px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--fg);text-decoration:none;cursor:pointer}
+.nav a:hover,.nav button:hover{border-color:var(--accent);color:var(--accent)}
+#pointDetail .nav{padding-left:0}
 .num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;font:600 12px var(--f-mono)}
 .muted{color:var(--muted);font-size:12.5px;margin:0}
 .warnbox{font-size:12.5px;color:var(--warn);margin:0}
@@ -686,6 +692,23 @@ function drawChart(w, d, days, t0) {
   $("#chart").innerHTML = s + "</svg>";
 }
 
+/* ================= Ouvrir dans une appli de navigation ================= */
+function navLinks(lat, lon, name) {
+  const c = lat.toFixed(5) + "," + lon.toFixed(5), q = encodeURIComponent(name);
+  const a = (href, txt, title) => `<a href="${href}" target="_blank" rel="noopener" title="${title}">${txt}</a>`;
+  return `<div class="nav">` +
+    a(`https://www.google.com/maps/search/?api=1&query=${c}`, "Google Maps", "Ouvrir dans Google Maps") +
+    a(`https://maps.apple.com/?ll=${c}&q=${q}`, "Plans", "Ouvrir dans Plans (iPhone)") +
+    a(`https://waze.com/ul?ll=${c}&navigate=yes`, "Waze", "Itinéraire Waze (s'arrête à la route la plus proche)") +
+    a(`geo:${c}?q=${c}(${q})`, "Autre appli", "Android : choisir OsmAnd, Organic Maps, IGNrando…") +
+    `<button type="button" onclick="copyCoords(this,'${c}')" title="Copier les coordonnées GPS">Copier GPS</button></div>`;
+}
+function copyCoords(btn, c) {
+  const done = () => { btn.textContent = "Copié !"; setTimeout(() => btn.textContent = "Copier GPS", 1500); };
+  if (navigator.clipboard) navigator.clipboard.writeText(c).then(done, () => prompt("Coordonnées :", c));
+  else prompt("Coordonnées :", c);
+}
+
 /* ================= Pantxo, le sanglier totem ================= */
 function totem(mood, txt) { $("#boar").setAttribute("class", "mood-" + mood); $("#totemTxt").textContent = txt; }
 function updateTotem() {
@@ -723,8 +746,8 @@ function findSpots() {
       .addTo(map).on("click", () => showPoint(L.latLng(lat, lon)));
     S.spots.push(m);
     const li = document.createElement("li");
-    li.innerHTML = `<button type="button"><span class="num">${r + 1}</span><span>${ess}<br><span class="muted">${lat.toFixed(4)}, ${lon.toFixed(4)}</span></span><b>${Math.round(c.v)}</b></button>`;
-    li.querySelector("button").onclick = () => { map.setView([lat, lon], Math.max(map.getZoom(), 15)); showPoint(L.latLng(lat, lon)); };
+    li.innerHTML = `<button type="button" class="go"><span class="num">${r + 1}</span><span>${ess}<br><span class="muted">${lat.toFixed(5)}, ${lon.toFixed(5)}</span></span><b>${Math.round(c.v)}</b></button>` + navLinks(lat, lon, `Coin à cèpes n°${r + 1}`);
+    li.querySelector(".go").onclick = () => { map.setView([lat, lon], Math.max(map.getZoom(), 15)); showPoint(L.latLng(lat, lon)); };
     ol.appendChild(li);
   });
 }
@@ -761,7 +784,7 @@ function showPoint(ll) {
     if (wi.RH != null) h += `<dt>Humidité de l'air (5 j)</dt><dd>${fmt(wi.RH)} %</dd>`;
     h += `<dt>Vent de NE séchant (5 j)</dt><dd>${wi.ne} j</dd><dt>Jours de gel (7 j)</dt><dd>${fmt(wi.frost, 1)}</dd>`;
   }
-  h += `</dl><p class="muted">${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)} · <a href="https://www.google.com/maps/dir/?api=1&destination=${ll.lat.toFixed(5)},${ll.lng.toFixed(5)}" target="_blank" rel="noopener">itinéraire</a></p>`;
+  h += `</dl><p class="muted">${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}</p>` + navLinks(ll.lat, ll.lng, "Coin à cèpes");
   $("#pointHint").hidden = true; const pd = $("#pointDetail"); pd.hidden = false; pd.innerHTML = h;
 }
 
