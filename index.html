@@ -171,7 +171,7 @@ details ul{padding-left:18px;margin:6px 0}
       <div class="verdict"><div class="gauge" id="gauge">—</div><p id="verdictTxt"></p></div>
       <p class="rule" id="rule"></p>
       <div id="chart"></div>
-      <p class="muted">Centre de la zone. Barres : pluie journalière (mm). Ligne : température moyenne. Bande claire : pluies qui comptent pour le jour choisi (J-22 à J-8). Partie teintée : prévisions.</p>
+      <p class="muted">Centre de la zone. Barres : pluie journalière (mm). Ligne : température moyenne. Bande claire : pluies qui font sortir les cèpes le jour choisi (de 8 à 19 jours avant, selon la température). Partie teintée : prévisions.</p>
     </section>
 
     <section id="spotsBox" hidden>
@@ -190,14 +190,15 @@ details ul{padding-left:18px;margin:6px 0}
       <p><strong>Règle de base.</strong> Pluie ≥ 25 mm en 2 à 4 jours, moyenne journalière entre 12 et 16 °C, pas de gel : les cèpes sortent entre J+8 et J+15, puis la vague dure 7 à 10 jours.</p>
       <p><strong>Météo (Open-Meteo, modèles Météo-France).</strong> Températures corrigées de l'altitude de chaque point (−0,65 °C / 100 m), ce qui fait descendre la saison en altitude toute seule.</p>
       <ul>
-        <li>Pluie déclenchante (55 % du score météo) : cumul sur 4 jours, plein effet vers 35 mm. Son poids dépend du délai écoulé : pic de J+8 à J+15 par temps doux (≥ 15 °C), de J+12 à J+19 par temps frais (≤ 10 °C), puis décroissance. +15 % si le sol avait déjà été mouillé dans les 3 semaines d'avant.</li>
-        <li>Humidité entretenue (30 %) : pluie des 7 derniers jours, humidité du sol ou humidité de l'air sur 5 jours. Réserve sur 30 jours (15 %).</li>
+        <li>Pluie déclenchante : cumul sur 4 jours (25 mm ≈ 0,7 ; plein effet vers 35 mm). Le délai part du dernier jour de pluie et dépend de la température qui a suivi : sortie à J+8 par temps doux (≥ 15 °C), à J+12 par temps frais (≤ 10 °C). Pic pendant 7 jours, puis la vague s'éteint en 7 jours. +15 % si le sol avait déjà été mouillé dans les 3 semaines d'avant.</li>
+        <li>Sans pluie déclenchante, le score météo est nul. L'humidité ne fait que moduler une poussée : pluie des 7 derniers jours, ou humidité du sol jugée par rapport à son propre maximum des 7 dernières semaines (un sable landais n'est jamais aussi humide qu'un limon), et pour un quart l'humidité de l'air.</li>
         <li>Température : sol idéal à 12–16 °C (nul sous 7,5 °C), moyenne de l'air à 12–16 °C, nuits à 6–12 °C.</li>
         <li>Choc thermique : une baisse des nuits d'environ 5 °C après une période chaude et pluvieuse donne jusqu'à 15 % de bonus.</li>
-        <li>Pénalités : chaque jour de gel sur 7 jours (×0,4), journées au-dessus de 28 °C, vent de nord-est sec d'au moins 20 km/h (×0,8 par jour sur 5 jours), bilan évaporation moins pluie fortement négatif.</li>
+        <li>Pénalités : chaque jour de gel sur 7 jours (×0,4), gelée franche (≤ −2 °C) la semaine d'avant (×0,7), journées au-dessus de 28 °C, vent de nord-est sec d'au moins 20 km/h (×0,8 par jour sur 5 jours), évaporation nettement supérieure à la pluie.</li>
+        <li>Lecture : 35 et plus = bonnes conditions, 55 et plus = excellentes.</li>
       </ul>
-      <p><strong>Botanique (BD Forêt V2, IGN).</strong> Coefficient d'affinité par essence : chênes décidus (pédonculé, tauzin), châtaignier et forêt mixte 1,0 · hêtre 0,95 · feuillus mélangés 0,85 · sapin-épicéa 0,8 · pin maritime et sylvestre 0,75 · douglas 0,35 · mélèze 0,25 · peuplier, robinier 0,1. Bonus : lisière à moins de 50 m (+12 %), mélange pins-feuillus à moins de 100 m (+10 %), forêt ouverte (+8 %). Jeune peuplement ou coupe récente : −50 %.</p>
-      <p><strong>Relief (RGE ALTI, IGN).</strong> Pente idéale de 3 à 22°. Exposition : versants nord et fonds humides quand il fait chaud ou sec ; versants sud à partir de mi-octobre ou quand il fait frais. Les crêtes ventées sont pénalisées, davantage en fin de saison, comme les fonds de vallon froids.</p>
+      <p><strong>Botanique (BD Forêt V2, IGN).</strong> Coefficient d'affinité par essence : chênes décidus (pédonculé, tauzin), châtaignier et forêt mixte 1,0 · hêtre 0,95 · mixte à conifères prépondérants 0,9 · feuillus mélangés 0,85 · sapin-épicéa 0,8 · pin maritime et sylvestre 0,75 · autre feuillu pur (aulne, frêne…) 0,6 · douglas 0,35 · mélèze 0,25 · coupe rase ou chablis, peuplier, robinier 0,1. Bonus : lisière à moins de 50 m (+12 %), mélange pins-feuillus à moins de 100 m (+10 %), forêt ouverte (+5 %). Le tout est divisé par 1,2 pour qu'une lisière de chênaie batte l'intérieur d'une chênaie.</p>
+      <p><strong>Relief (RGE ALTI, IGN, maille d'environ 250 m).</strong> Pente idéale de 3 à 22°. Exposition : versants nord et fonds humides quand il fait chaud ou sec ; versants sud à partir de mi-octobre ou quand il fait frais. Les crêtes ventées sont pénalisées, davantage en fin de saison, comme les fonds de vallon froids. Les talus et petits reliefs de moins de 250 m ne sont pas visibles à cette échelle.</p>
       <p><strong>Score final</strong> = botanique × météo × (0,45 + 0,55 × relief), ramené sur 100.</p>
       <p><strong>Ce que le modèle ne voit pas.</strong> La nature du sol (acide, sableux, drainé), les plantes indicatrices (fougère aigle, callune, myrtille, amanite tue-mouches), l'âge exact des arbres et la densité des taillis. Vérifiez-les sur place.</p>
       <p>C'est un modèle empirique d'aide à la décision, pas une garantie. Respectez la propriété privée et les arrêtés municipaux sur la cueillette, et faites vérifier toute récolte en cas de doute (bolet de Satan, bolet amer).</p>
@@ -254,25 +255,33 @@ const ESS = [
   { re: /laricio|pin noir/, label: "Pin laricio / pin noir", s: 0.5, k: "c" },
   { re: /alep/, label: "Pin d'Alep", s: 0.25 },
   { re: /crochets|cembro/, label: "Pin à crochets / cembro", s: 0.45, k: "c" },
-  { re: /pin/, label: "Pins mélangés", s: 0.65, k: "c" },
   { re: /sapin|epicea/, label: "Sapin, épicéa", s: 0.8, k: "c" },
+  { re: /\bpins?\b/, label: "Pins mélangés / autres pins", s: 0.65, k: "c" },
   { re: /douglas/, label: "Douglas", s: 0.35 },
   { re: /meleze/, label: "Mélèze", s: 0.25 },
   { re: /robinier/, label: "Robinier", s: 0.1 },
   { re: /peupl/, label: "Peupleraie", s: 0.1 },
+  { re: null, label: "Forêt mixte à conifères prépondérants", s: 0.9, k: "m" },
   { re: /mixte|melang/, label: "Forêt mixte feuillus-conifères", s: 1.0, k: "m" },
+  { re: null, label: "Autre feuillu pur (aulne, frêne, bouleau…)", s: 0.6, k: "f" },
   { re: /feuillu/, label: "Feuillus mélangés", s: 0.85, k: "f" },
   { re: /conif/, label: "Conifères mélangés", s: 0.65, k: "c" },
+  { re: null, label: "Coupe rase, chablis ou brûlis (sans arbres)", s: 0.1 },
   { re: /lande/, label: "Lande", s: 0.05 },
   { re: /herbac/, label: "Formation herbacée", s: 0 },
   { re: /.*/, label: "Boisement non renseigné", s: 0.4 },
 ];
 function essenceIndex(props) {
   const e = norm(props.essence), t = norm(props.tfv);
-  if (/peupleraie/.test(t)) return ESS.findIndex(x => x.label === "Peupleraie");
-  if (/lande/.test(t)) return ESS.findIndex(x => x.label === "Lande");
-  if (/herbac/.test(t)) return ESS.findIndex(x => x.label === "Formation herbacée");
-  return ESS.findIndex(x => x.re.test(e));
+  const by = l => ESS.findIndex(x => x.label === l);
+  // Le type de formation (tfv) prime : "NR" = forêt sans couvert arboré, "NC" = lande ou formation herbacée
+  if (/sans couvert/.test(t)) return by("Coupe rase, chablis ou brûlis (sans arbres)");
+  if (/peupleraie/.test(t)) return by("Peupleraie");
+  if (/lande/.test(t)) return by("Lande");
+  if (/herbac/.test(t)) return by("Formation herbacée");
+  if (/coniferes preponderants/.test(t)) return by("Forêt mixte à conifères prépondérants");
+  if (/autre feuillu/.test(t)) return by("Autre feuillu pur (aulne, frêne, bouleau…)");
+  return ESS.findIndex(x => x.re && x.re.test(e));
 }
 
 /* ================= Carte ================= */
@@ -390,7 +399,7 @@ async function analyze() {
       const g = f.geometry; if (!g) continue;
       const idx = essenceIndex(f.properties || {});
       const tfv = norm(f.properties.tfv);
-      const open = /ouverte/.test(tfv) ? 200 : 0, young = /jeune|coupe|recent|regenerat/.test(tfv) ? 200 : 0;
+      const open = /ouverte/.test(tfv) ? 200 : 0, young = 0;
       cx.fillStyle = `rgb(${(idx + 1) * 10},${open},${young})`;
       const polys = g.type === "Polygon" ? [g.coordinates] : g.type === "MultiPolygon" ? g.coordinates : [];
       cx.beginPath();
@@ -399,7 +408,7 @@ async function analyze() {
     }
     const px = cx.getImageData(0, 0, NX, NY).data;
     const cls = new Int16Array(NX * NY).fill(-1), openF = new Uint8Array(NX * NY), youngF = new Uint8Array(NX * NY);
-    for (let i = 0; i < NX * NY; i++) if (px[i * 4 + 3] > 140) { cls[i] = clamp(Math.round(px[i * 4] / 10) - 1, 0, ESS.length - 1); openF[i] = px[i * 4 + 1] > 100 ? 1 : 0; youngF[i] = px[i * 4 + 2] > 100 ? 1 : 0; }
+    for (let i = 0; i < NX * NY; i++) if (px[i * 4 + 3] > 100) { cls[i] = clamp(Math.round(px[i * 4] / 10) - 1, 0, ESS.length - 1); openF[i] = px[i * 4 + 1] > 100 ? 1 : 0; youngF[i] = px[i * 4 + 2] > 100 ? 1 : 0; }
     const pxM = long * 1000 / 380;
     const mkInteg = m => { const I = new Int32Array((NX + 1) * (NY + 1)); for (let y = 0; y < NY; y++) for (let x = 0; x < NX; x++) I[(y + 1) * (NX + 1) + x + 1] = m[y * NX + x] + I[y * (NX + 1) + x + 1] + I[(y + 1) * (NX + 1) + x] - I[y * (NX + 1) + x]; return I; };
     const boxSum = (I, x, y, r) => { const x0 = Math.max(0, x - r), x1 = Math.min(NX, x + r + 1), y0 = Math.max(0, y - r), y1 = Math.min(NY, y + r + 1); return [I[y1 * (NX + 1) + x1] - I[y0 * (NX + 1) + x1] - I[y1 * (NX + 1) + x0] + I[y0 * (NX + 1) + x0], (x1 - x0) * (y1 - y0)]; };
@@ -421,7 +430,7 @@ async function analyze() {
 
     // --- 2. Relief
     step(1, "run");
-    const GX = Math.max(8, Math.round(wKm / long * 42)), GY = Math.max(8, Math.round(hKm / long * 42));
+    const GX = Math.max(8, Math.round(wKm / long * 56)), GY = Math.max(8, Math.round(hKm / long * 56));
     const gpts = [];
     for (let j = 0; j < GY; j++) for (let i = 0; i < GX; i++) gpts.push([z.N - (j + 0.5) / GY * (z.N - z.S), z.W + (i + 0.5) / GX * (z.E - z.W)]);
     let elev;
@@ -494,23 +503,31 @@ const isNE = deg => deg != null && (deg >= 340 || deg <= 110);
 function weatherAt(w, d) {
   const P30 = wsum(w.P, d - 29, d), P7 = wsum(w.P, d - 6, d);
   const Tm = wavg(w.Tm, d - 9, d), Ts = wavg(w.Ts, d - 9, d), Tn7 = wavg(w.Tn, d - 6, d), Tx7 = wavg(w.Tx, d - 6, d);
-  const lag0 = lagFor(Tm);
 
-  // 1. Pluie déclenchante : cumul sur 4 jours (épisode de 2 à 4 jours), plein effet vers 35 mm,
-  //    pondérée par le délai, avec bonus si le sol avait déjà été mouillé dans les 3 semaines d'avant.
-  let best = 0, trig = 0, trigDay = null, prior = 0;
+  // 1. Pluie déclenchante : cumul sur 4 jours (épisode de 2 à 4 jours). 25 mm ≈ 0,7, plein effet vers 35 mm.
+  //    Délai calculé avec la température qui a suivi CETTE pluie (8 j par temps doux, 12 j par temps frais).
+  //    Bonus si le sol avait déjà été mouillé dans les 3 semaines d'avant.
+  let best = 0, trig = 0, trigDay = null, prior = 0, lag0 = lagFor(Tm);
   for (let r = d - 32; r <= d - 3; r++) {
     if (r < 3) continue;
     const P4 = wsum(w.P, r - 3, r); if (P4 < 8) continue;
+    // le délai part du dernier jour pluvieux de l'épisode, pas de la fin de la fenêtre de 4 jours
+    let wet = r; while (wet > r - 3 && (w.P[wet] || 0) < 1) wet--;
+    const lg = lagFor(wavg(w.Tm, wet, Math.min(d, wet + 10)));
     const pr = wsum(w.P, r - 24, r - 4);
-    const v = smooth(10, 35, P4) * lagWeight(d - r, lag0) * (1 + 0.15 * smooth(10, 40, pr));
-    if (v > best) { best = v; trig = P4; trigDay = r; prior = pr; }
+    const v = smooth(10, 35, P4) * lagWeight(d - wet, lg) * (1 + 0.15 * smooth(10, 40, pr));
+    if (v > best) { best = v; trig = P4; trigDay = wet; prior = pr; lag0 = lg; }
   }
   const fTrig = clamp(best), fCum = smooth(20, 70, P30);
 
-  // 3. Pas de dessèchement : pluie récente, sol humide, air humide / temps couvert
-  const sm = wavg(w.SM, d - 2, d), RH = wavg(w.RH, d - 4, d);
-  const fHum = Math.max(smooth(0, 10, P7), sm != null ? smooth(0.14, 0.30, sm) : 0, RH != null ? smooth(70, 92, RH) : 0);
+  // 3. Pas de dessèchement. Humidité du sol jugée par rapport à son propre maximum et minimum des 7 dernières semaines
+  //    (un sable landais n'atteint jamais l'humidité d'un sol limoneux). L'humidité de l'air ne compte que pour un quart.
+  const sm = wavg(w.SM, d - 2, d);
+  let smRel = null;
+  if (sm != null) { const v = w.SM.filter(x => x != null), lo = Math.min(...v), hi = Math.max(...v); smRel = hi - lo > 0.03 ? (sm - lo) / (hi - lo) : null; }
+  const RH = wavg(w.RH, d - 4, d);
+  const fWet = Math.max(smooth(0, 10, P7), smRel != null ? smooth(0.2, 0.7, smRel) : sm != null ? smooth(0.14, 0.30, sm) : 0);
+  const fHum = RH != null ? 0.75 * fWet + 0.25 * smooth(75, 95, RH) : fWet;
   let ne = 0; const dryBal = w.ET ? wsum(w.ET, d - 4, d) - wsum(w.P, d - 4, d) : 0;
   for (let i = d - 4; i <= d; i++) {
     const rh = w.RH ? w.RH[i] : null, ws = w.WS ? w.WS[i] : null;
@@ -519,19 +536,22 @@ function weatherAt(w, d) {
   const fNE = Math.pow(0.8, ne), fDry = 1 - 0.45 * smooth(6, 18, dryBal);
 
   // 2. Température : sol 12–16 °C (arrêt sous 8 °C), moyenne air 12–16 °C, nuits 6–12 °C
-  const fTs = Ts != null ? trap(Ts, 7.5, 12, 16, 21) : null;
-  const fTa = trap(Tm, 5, 11.5, 16.5, 23), fTn = trap(Tn7, -0.5, 6, 12, 17);
+  const fTs = Ts != null ? trap(Ts, 7.5, 12, 16, 23) : null;
+  const fTa = trap(Tm, 5, 11.5, 16.5, 24), fTn = trap(Tn7, -0.5, 6, 12, 18);
   const fTemp = fTs != null ? 0.5 * fTs + 0.3 * fTa + 0.2 * fTn : 0.65 * fTa + 0.35 * fTn;
-  let frost = 0, hot = 0;
+  // Gel : forte pénalité sur 7 jours ; une gelée franche (≤ −2 °C) marque encore la semaine suivante
+  let frost = 0, hot = 0, hardOld = 0;
   for (let i = d - 6; i <= d; i++) { const n = w.Tn[i], x = w.Tx[i]; if (n != null) frost += n <= -2 ? 2 : n <= 0 ? 1 : n <= 2 ? 0.3 : 0; if (x != null && x >= 28) hot++; }
-  const fFrost = Math.pow(0.4, frost), fHeat = Math.pow(0.75, hot);
+  for (let i = d - 13; i <= d - 7; i++) if (w.Tn[i] != null && w.Tn[i] <= -2) hardOld++;
+  const fFrost = Math.pow(0.4, frost) * Math.pow(0.7, hardOld), fHeat = Math.pow(0.75, hot);
   // Choc thermique : nuits qui baissent d'environ 5 °C après une période chaude et pluvieuse
-  const drop = (wavg(w.Tn, d - 20, d - 11) ?? 0) - (wavg(w.Tn, d - 9, d - 2) ?? 0);
+  const nA = wavg(w.Tn, d - 20, d - 11), nB = wavg(w.Tn, d - 9, d - 2), drop = nA != null && nB != null ? nA - nB : 0;
   const shock = smooth(1.5, 5, drop) * (P30 >= 25 ? 1 : 0.5), bonus = 1 + 0.15 * shock;
 
-  const base = 0.55 * fTrig + 0.15 * fCum + 0.30 * fHum;
+  // Sans pluie déclenchante, rien ne sort : l'humidité et la réserve ne font que moduler une poussée existante
+  const base = fTrig * (0.55 + 0.45 * fHum) * (0.85 + 0.15 * fCum);
   const W = clamp(base * fTemp * fFrost * fHeat * fNE * fDry * bonus);
-  return { W, P30, P7, trig, trigDay, prior, lag0, Tm, Ts, Tn7, Tx7, sm, RH, ne, dryBal, frost, hot, drop, shock, fTrig, fCum, fHum, fTemp, fFrost };
+  return { W, P30, P7, trig, trigDay, prior, lag0, Tm, Ts, Tn7, Tx7, sm, smRel, RH, ne, dryBal, frost, hardOld, hot, drop, shock, fTrig, fCum, fHum, fTemp, fFrost };
 }
 
 // Fin de saison (mi-octobre → février) : on cherche la chaleur, donc les versants sud et les zones abritées
@@ -554,7 +574,8 @@ function reliefAt(k, wInfo, late) {
 
 function botaAt(i) {
   const D = S.data, c = D.cls[i]; if (c < 0) return 0;
-  return Math.min(1, ESS[c].s * (D.edge[i] ? 1.12 : 1) * (D.openF[i] ? 1.08 : 1) * (D.mixF[i] ? 1.1 : 1) * (D.youngF[i] ? 0.5 : 1));
+  // divisé par 1,2 pour que lisière et mélange fassent la différence même sous chênes ou châtaigniers (sinon plafonnés à 1)
+  return Math.min(1, ESS[c].s * (D.edge[i] ? 1.12 : 1) * (D.openF[i] ? 1.05 : 1) * (D.mixF[i] ? 1.1 : 1) / 1.2);
 }
 
 function cellScores(dayIdx) {
@@ -631,57 +652,65 @@ function updateSummary() {
   const wi = weatherAt(D.cellWx[k], D.dayIdx);
   const Wm = D.cs.W.reduce((a, b) => a + b, 0) / D.cs.W.length;
   const g = Math.round(Wm * 100);
-  const lvl = g >= 65 ? "Excellentes" : g >= 45 ? "Bonnes" : g >= 25 ? "Moyennes" : "Défavorables";
+  const lvl = g >= 55 ? "Excellentes" : g >= 35 ? "Bonnes" : g >= 15 ? "Moyennes" : "Défavorables";
   const why = [];
   if (wi.Ts != null) why.push(`sol à ${fmt(wi.Ts, 1)} °C`);
   if (wi.Tn7 != null) why.push(`nuits à ${fmt(wi.Tn7, 1)} °C`);
   if (wi.shock > 0.5) why.push("choc thermique récent");
   if (wi.frost >= 1) why.push("gelées récentes");
   if (wi.ne >= 2) why.push(`${wi.ne} jours de vent de nord-est`);
-  if (wi.P7 < 3 && (wi.sm == null || wi.sm < 0.2)) why.push("sol qui s'assèche");
-  $("#gauge").textContent = g; $("#gauge").style.color = g >= 45 ? "var(--moss)" : g >= 25 ? "var(--accent)" : "var(--warn)";
+  if (wi.P7 < 3 && (wi.smRel == null || wi.smRel < 0.35)) why.push("sol qui s'assèche");
+  $("#gauge").textContent = g; $("#gauge").style.color = g >= 35 ? "var(--moss)" : g >= 15 ? "var(--accent)" : "var(--warn)";
   $("#verdictTxt").innerHTML = `<strong>Conditions météo ${lvl.toLowerCase()}</strong>${why.join(", ")}.`;
-  $("#rule").innerHTML = ruleText(D.cellWx[k], D.wx.days, D.wx.t0);
-  drawChart(D.cellWx[k], D.dayIdx, D.wx.days, D.wx.t0);
+  $("#rule").innerHTML = ruleText(D.cellWx[k], D.wx.days, D.dayIdx, D.wx.t0);
+  drawChart(D.cellWx[k], D.dayIdx, D.wx.days, D.wx.t0, wi);
 }
 
 // Règle opérationnelle : pluie ≥ 25 mm sur 2–4 j + moyenne 12–16 °C + pas de gel → sortie entre J+8 et J+15, vague de 7–10 j
-function ruleText(w, days, t0) {
+// ref = jour choisi avec le curseur, t0 = aujourd'hui (au-delà, ce sont des prévisions)
+function ruleText(w, days, ref, t0) {
   const dd = i => new Date(days[clamp(i, 0, days.length - 1)] + "T12:00").toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" });
-  const last = days.length - 1;
-  // épisodes : maximum local du cumul sur 4 jours ≥ 25 mm
+  const last = days.length - 1, rel = ref === t0 ? "aujourd'hui" : "ce jour-là";
+  // épisodes : maximum local du cumul sur 4 jours ≥ 25 mm, connus au jour choisi (passé ou prévu)
   const ev = [];
   for (let r = 3; r <= last; r++) {
     const P4 = wsum(w.P, r - 3, r);
-    if (P4 >= 25 && P4 >= wsum(w.P, r - 4, r - 1) && P4 > wsum(w.P, r - 2, r + 1)) ev.push({ r, P4 });
+    if (P4 >= 25 && P4 >= wsum(w.P, r - 4, r - 1) && P4 > wsum(w.P, r - 2, r + 1)) {
+      const Tm = wavg(w.Tm, r, Math.min(last, r + 10));
+      const lag = Math.round(lagFor(Tm));
+      ev.push({ r, P4, Tm, a: r + lag, b: r + lag + 7, end: r + lag + 14 });
+    }
   }
-  const frostDays = []; for (let i = t0; i <= last; i++) if (w.Tn[i] != null && w.Tn[i] <= 0) frostDays.push(i);
-  let h = "";
-  const recent = ev.filter(e => e.r >= t0 - 30);
-  S.rule = { frost: frostDays.length ? dd(frostDays[0]) : null, wait: null };
-  if (recent.length) { const e = recent[recent.length - 1], a = e.r + Math.round(lagFor(wavg(w.Tm, e.r, e.r + 7) ?? wavg(w.Tm, t0 - 7, t0))); if (t0 < a) S.rule.wait = { rain: dd(e.r), from: dd(a), mm: e.P4 }; }
-  if (!recent.length) {
-    h = `<strong>Aucune pluie déclenchante</strong>Pas d'épisode de 25 mm ou plus sur 2 à 4 jours depuis un mois, ni dans les prévisions à 7 jours.`;
+  const active = ev.filter(e => ref >= e.a && ref <= e.end).pop();     // vague en cours au jour choisi
+  const next = ev.find(e => e.a > ref && e.r >= ref - 20);             // prochaine sortie attendue
+  const frostDays = []; for (let i = ref; i <= last; i++) if (w.Tn[i] != null && w.Tn[i] <= 0) frostDays.push(i);
+  S.rule = { frost: frostDays.length ? dd(frostDays[0]) : null, wait: !active && next ? { rain: dd(next.r), from: dd(next.a), mm: next.P4 } : null };
+  const tempNote = e => e.Tm != null && (e.Tm < 12 || e.Tm > 16) ? ` Température ${e.Tm < 12 ? "un peu fraîche" : "un peu chaude"} (${fmt(e.Tm, 1)} °C, idéal 12–16 °C).` : "";
+  const fut = e => e.r > t0 ? " (prévue)" : "";
+  let h;
+  if (active) {
+    const st = ref <= active.b ? `C'est le moment ${rel} : la vague est en cours.` : `La vague touche à sa fin ${rel}.`;
+    h = `<strong>${fmt(active.P4)} mm jusqu'au ${dd(active.r)}${fut(active)}</strong>Sortie du <b>${dd(active.a)}</b> au <b>${dd(active.b)}</b>, vague jusqu'au ${dd(active.end)} environ. ${st}${tempNote(active)}`;
+    if (next) h += ` Nouvelle pluie de ${fmt(next.P4)} mm le ${dd(next.r)}${fut(next)} : relance vers le ${dd(next.a)}.`;
+  } else if (next) {
+    h = `<strong>${fmt(next.P4)} mm jusqu'au ${dd(next.r)}${fut(next)}</strong>Sortie attendue du <b>${dd(next.a)}</b> au <b>${dd(next.b)}</b>, soit dans ${next.a - ref} jour${next.a - ref > 1 ? "s" : ""}.${tempNote(next)}`;
   } else {
-    const e = recent[recent.length - 1];
-    const Tm = wavg(w.Tm, e.r, e.r + 7) ?? wavg(w.Tm, t0 - 7, t0);
-    const lag0 = Math.round(lagFor(Tm)), a = e.r + lag0, b = e.r + lag0 + 7, end = b + 7;
-    const fut = e.r > t0 ? " (prévue)" : "";
-    let state = t0 < a ? `Sortie attendue dans ${a - t0} jour${a - t0 > 1 ? "s" : ""}.` : t0 <= b ? "C'est le moment : la vague est en cours." : t0 <= end ? "La vague touche à sa fin." : "Vague probablement terminée.";
-    h = `<strong>${fmt(e.P4)} mm jusqu'au ${dd(e.r)}${fut}</strong>Avec ${fmt(Tm, 1)} °C de moyenne, sortie du <b>${dd(a)}</b> au <b>${dd(b)}</b>, vague jusqu'au ${dd(end)} environ. ${state}`;
-    if (Tm != null && (Tm < 10 || Tm > 18)) h += ` Température hors de la plage idéale (12–16 °C).`;
+    const prev = ev.filter(e => e.r <= ref).pop();
+    h = prev ? `<strong>Pas de vague en cours</strong>La dernière pluie suffisante (${fmt(prev.P4)} mm le ${dd(prev.r)}) a fini de produire.`
+             : `<strong>Aucune pluie déclenchante</strong>Pas d'épisode de 25 mm ou plus sur 2 à 4 jours dans les données disponibles.`;
   }
   if (frostDays.length) h += ` <span style="color:var(--warn)">Gel prévu le ${dd(frostDays[0])} : fin de poussée probable.</span>`;
-  else { const tn = wavg(w.Tn, t0, last); if (tn != null) h += ` Minimales prévues : ${fmt(tn, 1)} °C en moyenne, pas de gel.`; }
+  else if (ref <= last) { const tn = wavg(w.Tn, ref, last); if (tn != null) h += ` Minimales prévues : ${fmt(tn, 1)} °C en moyenne, pas de gel.`; }
   return h;
 }
 
-function drawChart(w, d, days, t0) {
+function drawChart(w, d, days, t0, wi) {
   const n = days.length, Wd = 340, H = 130, pl = 26, pr = 26, pt = 10, pb = 20, cw = (Wd - pl - pr) / n;
   const pmax = Math.max(20, ...w.P), tvals = w.Tm.filter(v => v != null), tmin = Math.min(0, ...tvals), tmax = Math.max(20, ...tvals);
   const yP = v => H - pb - v / pmax * (H - pt - pb), yT = v => H - pb - (v - tmin) / (tmax - tmin) * (H - pt - pb);
   let s = `<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Pluie et température">`;
-  s += `<rect x="${pl + Math.max(0, d - 22) * cw}" y="${pt}" width="${15 * cw}" height="${H - pt - pb}" fill="var(--chip)"/>`;
+  const lg = Math.round(wi ? wi.lag0 : 10), x0 = Math.max(0, d - lg - 7), x1 = Math.max(0, d - lg + 1);
+  if (x1 > x0) s += `<rect x="${pl + x0 * cw}" y="${pt}" width="${(x1 - x0) * cw}" height="${H - pt - pb}" fill="var(--chip)"/>`;
   s += `<rect x="${pl + t0 * cw}" y="${pt}" width="${(n - t0) * cw}" height="${H - pt - pb}" fill="var(--accent)" opacity=".07"/>`;
   w.P.forEach((v, i) => { if (v > 0) s += `<rect x="${pl + i * cw + 0.5}" y="${yP(v)}" width="${Math.max(1, cw - 1)}" height="${H - pb - yP(v)}" fill="#4F7FA6"/>`; });
   s += `<polyline fill="none" stroke="var(--accent)" stroke-width="1.6" points="${w.Tm.map((v, i) => v == null ? "" : `${pl + (i + 0.5) * cw},${yT(v)}`).join(" ")}"/>`;
@@ -716,10 +745,10 @@ function updateTotem() {
   if (!D.cellWx) return totem("sniff", "Pas de météo, je me fie aux arbres.");
   const g = Math.round(D.cs.W.reduce((a, b) => a + b, 0) / D.cs.W.length * 100);
   const r = S.rule || {};
-  if (r.frost && S.day >= 0 && g < 45) return totem("sleep", `Gel le ${r.frost}… je vais dormir.`);
-  if (g >= 45) return totem("happy", S.topSpot ? `Ça sent bon ! Va voir le coin n°1.` : "Ça sent bon !");
+  if (r.frost && S.day >= 0 && g < 35) return totem("sleep", `Gel le ${r.frost}… je vais dormir.`);
+  if (g >= 35) return totem("happy", S.topSpot ? `Ça sent bon ! Va voir le coin n°1.` : "Ça sent bon !");
   if (r.wait) return totem("sniff", `Patience, ça sort vers le ${r.wait.from}.`);
-  if (g >= 25) return totem("sniff", "Ça frémit… essaie les lisières.");
+  if (g >= 15) return totem("sniff", "Ça frémit… essaie les lisières.");
   return totem("sleep", "Trop sec pour l'instant… zzz");
 }
 
@@ -727,20 +756,22 @@ function findSpots() {
   const D = S.data, B = 12, bx = Math.floor(D.NX / B), by = Math.floor(D.NY / B), cand = [];
   for (let j = 0; j < by; j++) for (let i = 0; i < bx; i++) {
     let s = 0, n = 0;
-    for (let y = j * B; y < (j + 1) * B; y++) for (let x = i * B; x < (i + 1) * B; x++) { const v = D.total[y * D.NX + x]; if (v >= 0) { s += v; n++; } }
-    if (n > B * B * 0.5) cand.push({ i, j, v: s / n });
+    let bx_ = 0, by_ = 0, bv = -1;
+    for (let y = j * B; y < (j + 1) * B; y++) for (let x = i * B; x < (i + 1) * B; x++) { const v = D.total[y * D.NX + x]; if (v >= 0) { s += v; n++; if (v > bv) { bv = v; bx_ = x; by_ = y; } } }
+    if (n > B * B * 0.5) cand.push({ i, j, v: s / n, px: bx_, py: by_ });
   }
   cand.sort((a, b) => b.v - a.v);
   const pick = [];
   for (const c of cand) { if (pick.length >= 5 || c.v < 15) break; if (pick.every(p => Math.hypot(p.i - c.i, p.j - c.j) >= 4)) pick.push(c); }
   S.spots.forEach(m => m.remove()); S.spots = [];
   const ol = $("#spots"); ol.innerHTML = "";
-  S.topSpot = pick.length ? { v: pick[0].v, ess: (() => { const c = D.cls[Math.round((pick[0].j + 0.5) * B) * D.NX + Math.round((pick[0].i + 0.5) * B)]; return c >= 0 ? ESS[c].label : "forêt"; })() } : null;
+  S.topSpot = pick.length ? { v: pick[0].v, ess: (() => { const c = D.cls[pick[0].py * D.NX + pick[0].px]; return c >= 0 ? ESS[c].label : "forêt"; })() } : null;
   $("#spotsBox").hidden = false;
   if (!pick.length) { ol.innerHTML = `<li class="muted">Aucun secteur ne dépasse 15/100 ce jour-là.</li>`; return; }
   pick.forEach((c, r) => {
-    const lat = D.z.N - (c.j + 0.5) * B / D.NY * (D.z.N - D.z.S), lon = D.z.W + (c.i + 0.5) * B / D.NX * (D.z.E - D.z.W);
-    const pidx = Math.round((c.j + 0.5) * B) * D.NX + Math.round((c.i + 0.5) * B);
+    // repère posé sur le meilleur pixel boisé du secteur (pas au centre, qui peut tomber dans une clairière)
+    const lat = D.z.N - (c.py + 0.5) / D.NY * (D.z.N - D.z.S), lon = D.z.W + (c.px + 0.5) / D.NX * (D.z.E - D.z.W);
+    const pidx = c.py * D.NX + c.px;
     const ess = D.cls[pidx] >= 0 ? ESS[D.cls[pidx]].label : "forêt";
     const m = L.marker([lat, lon], { icon: L.divIcon({ className: "", html: `<div class="spot-icon">${r + 1}</div>`, iconSize: [24, 24], iconAnchor: [12, 12] }), title: `Coin ${r + 1}` })
       .addTo(map).on("click", () => showPoint(L.latLng(lat, lon)));
@@ -766,7 +797,7 @@ function showPoint(ll) {
   const c = D.cls[i], inf = D.cs.info[k], wi = inf.wi, ri = inf.ri;
   const B = botaAt(i);
   const T = D.total[i];
-  const tags = c >= 0 ? [D.edge[i] ? "en lisière" : "sous couvert", D.openF[i] && "forêt ouverte", D.mixF[i] && "mélange pins-feuillus", D.youngF[i] && "jeune peuplement"].filter(Boolean).join(", ") : "";
+  const tags = c >= 0 ? [D.edge[i] ? "en lisière" : "sous couvert", D.openF[i] && "forêt ouverte", D.mixF[i] && "mélange pins-feuillus"].filter(Boolean).join(", ") : "";
   const dirs = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"], dir = dirs[Math.round(D.aspect[k] / 45) % 8];
   const bar = (lbl, v) => `<span>${lbl}</span><div class="bar"><i style="width:${Math.round(v * 100)}%"></i></div><span>${Math.round(v * 100)}</span>`;
   let h = `<div class="verdict"><div class="gauge">${T >= 0 ? Math.round(T) : "—"}</div><p><strong>${c >= 0 ? ESS[c].label : "Hors forêt"}</strong>${c >= 0 ? tags.charAt(0).toUpperCase() + tags.slice(1) : "Pas de cèpes attendus ici."}</p></div>`;
@@ -780,7 +811,7 @@ function showPoint(ll) {
     if (wi.Ts != null) h += `<dt>T° sol (10 j)</dt><dd>${fmt(wi.Ts, 1)} °C</dd>`;
     h += `<dt>T° air moy. (10 j)</dt><dd>${fmt(wi.Tm, 1)} °C</dd><dt>Nuits · journées (7 j)</dt><dd>${fmt(wi.Tn7, 1)} · ${fmt(wi.Tx7, 1)} °C</dd>`;
     h += `<dt>Baisse des nuits</dt><dd>${wi.drop > 0 ? "−" : "+"}${fmt(Math.abs(wi.drop), 1)} °C</dd>`;
-    if (wi.sm != null) h += `<dt>Humidité du sol</dt><dd>${fmt(wi.sm * 100)} %</dd>`;
+    if (wi.sm != null) h += `<dt>Humidité du sol</dt><dd>${fmt(wi.sm * 100)} %${wi.smRel != null ? " (" + fmt(wi.smRel * 100) + " % de son max.)" : ""}</dd>`;
     if (wi.RH != null) h += `<dt>Humidité de l'air (5 j)</dt><dd>${fmt(wi.RH)} %</dd>`;
     h += `<dt>Vent de NE séchant (5 j)</dt><dd>${wi.ne} j</dd><dt>Jours de gel (7 j)</dt><dd>${fmt(wi.frost, 1)}</dd>`;
   }
