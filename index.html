@@ -12,17 +12,17 @@
 :root{
   --bg:#EEF1EA; --surface:#FAFBF7; --fg:#1E261F; --muted:#5B685D; --line:#D3DACF;
   --accent:#7A4A21; --accent-fg:#FFF8EF; --moss:#3F6B45; --warn:#A8471C;
-  --chip:#E3E8DD; --boar:#5E3F27; --boar-dk:#3B2615; --snout:#C98C7A;
+  --chip:#E3E8DD; --boar:#B98552; --boar-dk:#7A5230; --snout:#E7A99A; --stripe:#EBD6AE;
   --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --f-body:"Public Sans", "Segoe UI", system-ui, sans-serif;
   --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#121814; --surface:#19211C; --fg:#E5EAE1; --muted:#98A69A; --line:#2C3830;
-  --accent:#D69B5F; --accent-fg:#1B1209; --moss:#86B98D; --warn:#E88A5C; --chip:#232D26; --boar:#A27552; --boar-dk:#6E4A2E; --snout:#D9A090; color-scheme:dark }}
+  --accent:#D69B5F; --accent-fg:#1B1209; --moss:#86B98D; --warn:#E88A5C; --chip:#232D26; --boar:#B98552; --boar-dk:#7A5230; --snout:#E7A99A; --stripe:#EBD6AE; color-scheme:dark }}
 :root[data-theme="dark"]{
   --bg:#121814; --surface:#19211C; --fg:#E5EAE1; --muted:#98A69A; --line:#2C3830;
-  --accent:#D69B5F; --accent-fg:#1B1209; --moss:#86B98D; --warn:#E88A5C; --chip:#232D26; --boar:#A27552; --boar-dk:#6E4A2E; --snout:#D9A090; color-scheme:dark }
+  --accent:#D69B5F; --accent-fg:#1B1209; --moss:#86B98D; --warn:#E88A5C; --chip:#232D26; --boar:#B98552; --boar-dk:#7A5230; --snout:#E7A99A; --stripe:#EBD6AE; color-scheme:dark }
 
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
@@ -69,22 +69,15 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .gauge{font:700 30px/1 var(--f-display);font-variant-numeric:tabular-nums;min-width:56px;text-align:center}
 .verdict p{margin:0;font-size:13px}
 .verdict strong{display:block;font:600 15px var(--f-display)}
-.totem{display:grid;grid-template-columns:104px 1fr;gap:10px;align-items:center}
-#boar{width:104px;height:auto;overflow:visible}
-.bubble{position:relative;margin:0;padding:10px 12px;background:var(--chip);border-radius:10px;font-size:13px;min-width:0}
-.bubble::before{content:"";position:absolute;left:-7px;top:50%;margin-top:-7px;border:7px solid transparent;border-left:0;border-right-color:var(--chip)}
-.bubble b{display:block;font:600 12px var(--f-display);color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
-#boar .eye-shut,#boar .zzz,#boar .cep{display:none}
-#boar .zzz{font:600 10px var(--f-mono);fill:var(--muted)}
-#boar.mood-sleep .eye-open{display:none} #boar.mood-sleep .eye-shut,#boar.mood-sleep .zzz{display:inline}
+.totem{display:flex;gap:10px;align-items:center}
+#boar{width:52px;height:auto;flex:none}
+#totemTxt{margin:0;font-size:12.5px;line-height:1.4;color:var(--muted);font-style:italic;min-width:0}
+#boar .eye-shut,#boar .cep{display:none}
+#boar.mood-sleep .eye-open{display:none} #boar.mood-sleep .eye-shut{display:inline}
 #boar.mood-happy .cep{display:inline}
-#boar .snout{transform-origin:110px 56px;transform-box:view-box}
-#boar.mood-sniff .snout{animation:sniff 1.1s ease-in-out infinite}
-#boar.mood-happy .hop{animation:hop .7s ease-in-out infinite}
-#boar.mood-sleep .zzz{animation:zz 2.4s ease-in-out infinite}
-@keyframes sniff{0%,100%{transform:translate(0,0)}25%{transform:translate(1.5px,-1px)}75%{transform:translate(1.5px,1px)}}
-@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-@keyframes zz{0%,100%{opacity:.3}50%{opacity:1}}
+#boar.mood-sniff .eye-open{animation:blink 4s infinite}
+#boar .eye-open{transform-origin:43.5px 18.5px;transform-box:view-box}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
 .rule{margin:0;font-size:13px;padding:10px 12px;border-left:3px solid var(--accent);background:var(--chip);border-radius:0 6px 6px 0}
 .rule strong{display:block;font:600 14px var(--f-display)}
 .kv{display:grid;grid-template-columns:1fr auto;gap:2px 12px;font-size:13px;margin:0}
@@ -116,27 +109,22 @@ details ul{padding-left:18px;margin:6px 0}
     <h1>Carte à cèpes<small>Croise la météo des 5 dernières semaines, le relief (RGE ALTI) et les essences forestières (BD Forêt IGN) pour repérer où les cèpes ont le plus de chances de sortir.</small></h1>
 
     <div class="totem" aria-live="polite">
-      <svg id="boar" class="mood-sniff" viewBox="0 0 124 92" role="img" aria-label="Pantxo le sanglier">
-        <g class="hop">
-          <path d="M14 50 q-7 -3 -4 -9 q5 -3 4 4" fill="none" stroke="var(--boar)" stroke-width="2.5" stroke-linecap="round"/>
-          <rect x="26" y="66" width="8" height="17" rx="3" fill="var(--boar-dk)"/>
-          <rect x="40" y="68" width="8" height="16" rx="3" fill="var(--boar)"/>
-          <rect x="64" y="68" width="8" height="16" rx="3" fill="var(--boar-dk)"/>
-          <rect x="77" y="66" width="8" height="17" rx="3" fill="var(--boar)"/>
-          <ellipse cx="50" cy="54" rx="39" ry="24" fill="var(--boar)"/>
-          <path d="M20 40 Q48 22 84 36" fill="none" stroke="var(--boar-dk)" stroke-width="6" stroke-linecap="round"/>
-          <path d="M76 36 Q100 38 109 50 L111 60 Q100 68 80 68 Z" fill="var(--boar)"/>
-          <path d="M80 37 L86 24 L92 40 Z" fill="var(--boar-dk)"/>
-          <g class="snout"><ellipse cx="110" cy="56" rx="6" ry="7.5" fill="var(--snout)"/>
-            <circle cx="109" cy="53.5" r="1.3" fill="var(--boar-dk)"/><circle cx="109" cy="58.5" r="1.3" fill="var(--boar-dk)"/></g>
-          <path d="M100 63 q5 -1 4 -8" fill="none" stroke="#F4EBDD" stroke-width="2.4" stroke-linecap="round"/>
-          <g class="eye-open"><circle cx="93" cy="46" r="3" fill="#FFF8EF"/><circle cx="94" cy="46" r="1.7" fill="#1A120A"/></g>
-          <path class="eye-shut" d="M90 46 q3 2.5 6 0" fill="none" stroke="#1A120A" stroke-width="1.8" stroke-linecap="round"/>
-        </g>
-        <text class="zzz" x="96" y="20">z<tspan dx="2" dy="-6" font-size="13">z</tspan></text>
-        <g class="cep"><ellipse cx="116" cy="80" rx="7" ry="4" fill="#8A5A2B"/><rect x="113" y="80" width="6" height="9" rx="2.5" fill="#EFE2C8"/></g>
+      <svg id="boar" class="mood-sniff" viewBox="0 0 66 40" role="img" aria-label="Pantxo le marcassin">
+        <path d="M8 21 q-4 -1 -3 -4" fill="none" stroke="var(--boar)" stroke-width="1.6" stroke-linecap="round"/>
+        <rect x="14" y="30" width="5" height="7" rx="2.5" fill="var(--boar-dk)"/>
+        <rect x="31" y="30" width="5" height="7" rx="2.5" fill="var(--boar-dk)"/>
+        <ellipse cx="25" cy="23" rx="18" ry="11.5" fill="var(--boar)"/>
+        <path d="M11 19 Q24 14 38 18 M10 24 Q24 19 40 23 M12 29 Q24 25 38 28" fill="none" stroke="var(--stripe)" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="41" cy="20" r="10" fill="var(--boar)"/>
+        <path d="M36 12 q1 -6 5 -3 l-1 5 z" fill="var(--boar-dk)"/>
+        <ellipse cx="50.5" cy="23" rx="4" ry="3.6" fill="var(--snout)"/>
+        <circle cx="50" cy="22" r=".8" fill="var(--boar-dk)"/><circle cx="51.6" cy="23.8" r=".8" fill="var(--boar-dk)"/>
+        <circle cx="44" cy="25" r="2.2" fill="var(--snout)" opacity=".55"/>
+        <g class="eye-open"><circle cx="43.5" cy="18.5" r="1.9" fill="#1A120A"/><circle cx="44.1" cy="17.9" r=".6" fill="#fff"/></g>
+        <path class="eye-shut" d="M41.7 18.8 q1.8 1.5 3.6 0" fill="none" stroke="#1A120A" stroke-width="1.2" stroke-linecap="round"/>
+        <g class="cep"><ellipse cx="60" cy="31" rx="5" ry="3" fill="#8A5A2B"/><rect x="58" y="31" width="4" height="6" rx="1.8" fill="#EFE2C8"/></g>
       </svg>
-      <p class="bubble" id="totemTxt"><b>Pantxo</b>Je renifle la zone…</p>
+      <p id="totemTxt">Je renifle la zone…</p>
     </div>
 
     <section>
@@ -699,20 +687,17 @@ function drawChart(w, d, days, t0) {
 }
 
 /* ================= Pantxo, le sanglier totem ================= */
-function totem(mood, txt) { $("#boar").setAttribute("class", "mood-" + mood); $("#totemTxt").innerHTML = "<b>Pantxo</b>" + txt; }
+function totem(mood, txt) { $("#boar").setAttribute("class", "mood-" + mood); $("#totemTxt").textContent = txt; }
 function updateTotem() {
   const D = S.data; if (!D) return;
-  const top = S.topSpot;
-  const go = top ? ` Commence par le coin n°1 (${top.ess.toLowerCase()}, ${Math.round(top.v)}/100).` : "";
-  if (!D.cellWx) return totem("sniff", "Sans la météo, je flaire à l'aveugle : je me fie aux arbres et au relief." + go);
+  if (!D.cellWx) return totem("sniff", "Pas de météo, je me fie aux arbres.");
   const g = Math.round(D.cs.W.reduce((a, b) => a + b, 0) / D.cs.W.length * 100);
-  const r = S.rule || {}, when = S.day === 0 ? "aujourd'hui" : "ce jour-là";
-  if (r.frost && S.day >= 0 && g < 45) return totem("sleep", `Gel annoncé le ${r.frost}. Je retourne dormir sous les fougères, la saison se termine.`);
-  if (g >= 65) return totem("happy", `Ça sent le cèpe à plein groin ${when} ! Sors tôt le matin, et fouille en cercle autour de chaque trouvaille.` + go);
-  if (g >= 45) return totem("happy", `Bonne odeur sous les chênes ${when}.` + go + (r.frost ? ` Fais vite : gel annoncé le ${r.frost}.` : ""));
-  if (r.wait) return totem("sniff", `Patience : la pluie du ${r.wait.rain} (${fmt(r.wait.mm)} mm) devrait les faire sortir à partir du ${r.wait.from}.`);
-  if (g >= 25) return totem("sniff", `Ça frémit, sans plus. Tente les lisières${D.late ? " exposées au sud" : ""}, les talus et les bords de chemins.` + go);
-  return totem("sleep", "Rien à flairer pour l'instant : il manque une bonne pluie. Je fais la sieste.");
+  const r = S.rule || {};
+  if (r.frost && S.day >= 0 && g < 45) return totem("sleep", `Gel le ${r.frost}… je vais dormir.`);
+  if (g >= 45) return totem("happy", S.topSpot ? `Ça sent bon ! Va voir le coin n°1.` : "Ça sent bon !");
+  if (r.wait) return totem("sniff", `Patience, ça sort vers le ${r.wait.from}.`);
+  if (g >= 25) return totem("sniff", "Ça frémit… essaie les lisières.");
+  return totem("sleep", "Trop sec pour l'instant… zzz");
 }
 
 function findSpots() {
